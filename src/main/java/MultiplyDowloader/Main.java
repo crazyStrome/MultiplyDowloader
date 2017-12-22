@@ -228,6 +228,10 @@ public class Main {
             public void actionPerformed(ActionEvent e) {
                 urlPath = urlPath.equals(urlField.getText().trim()) ? urlPath : urlField.getText().trim();
                 fileToSave = fileToSave.equals(filePathField.getText().trim()) ? fileToSave : filePathField.getText().trim();
+                if (urlPath == null || fileToSave == null) {
+                    statusField.setText(TAG + "下载失败，请填写链接和路径");
+                    return;
+                }
                 DownUntil downUntil = new DownUntil(urlPath, fileToSave, fileSize, contentType);
                 /**
                  * 新开一个线程监控下载情况

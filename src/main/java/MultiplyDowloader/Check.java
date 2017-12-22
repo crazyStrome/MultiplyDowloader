@@ -34,9 +34,11 @@ public class Check implements Callable<Map<String, String>> {
             HttpGet get = new HttpGet(checkPath);
             CloseableHttpResponse response = client.execute(get);
             println(response.getStatusLine());
-            map.put("Content-Type", response.getEntity().getContentType().toString());
-            map.put("Content-Length", response.getEntity().getContentLength()+"");
-            Arrays.stream(response.getAllHeaders()).forEach(Main::println);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                map.put("Content-Type", response.getEntity().getContentType().toString());
+                map.put("Content-Length", response.getEntity().getContentLength()+"");
+                Arrays.stream(response.getAllHeaders()).forEach(Main::println);
+            }
             client.close();
             response.close();
         } catch (Exception e) {
@@ -50,10 +52,11 @@ public class Check implements Callable<Map<String, String>> {
         return map;
     }
 
-
+    /**
     public static void main(String[] args) throws Exception{
         //FutureTask<Map<String, String>> fu = new FutureTask<>(new Check("http://dl.mqego.com/soft1/navicatmysqlfront.zip"));
         //new Thread(fu).start();
         //println(fu.get());
     }
+     */
 }
