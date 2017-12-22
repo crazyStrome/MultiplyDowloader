@@ -1,0 +1,34 @@
+group 'com.crazyStrome'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}
+jar {
+    String something = ''
+    configuration.runtime.each{something = something + "lib//" + it.name}
+    manifest {
+        attributes 'Main-Class':'MultiplyDowloader.Main'
+        attributes 'Class-Path':'something'
+    }
+}
+task copyJar(type:Copy) {
+    from configuration.runtime
+    into ('build/libs/lib')
+}
+task release(type:Copy,dependsOn:[build,copyJar]) {
+    from 'conf'
+    into ('build/libs/eachend/conf')
+}
+
+
