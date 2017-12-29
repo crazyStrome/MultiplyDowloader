@@ -2,9 +2,18 @@ group 'com.crazyStrome'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'idea'
+compileJava.options.encoding = 'UTF-8'
+version = '1.0'
 
 sourceCompatibility = 1.8
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/java/MultiplyDowloader'
+        }
+        output.resourcesDir = "build/classes/java/main/MultiplyDowloader"
+    }
+}
 
 repositories {
     mavenCentral()
@@ -12,23 +21,36 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.4'
 }
-jar {
-    String something = ''
-    configuration.runtime.each{something = something + "lib//" + it.name}
+task copyJars (type:Copy) {
+    from configurations.runtime
+    into 'build/libs/configs'
+}
+
+task copyConfigs (type: Copy) {
+    from 'configs/'
+    into 'build/libs/configs'
+}
+
+task generateJar(type: Jar, dependsOn: [copyJars, copyConfigs, jar]) {
     manifest {
-        attributes 'Main-Class':'MultiplyDowloader.Main'
-        attributes 'Class-Path':'something'
+        attributes(
+                'Implementation-Title': 'Gradle',
+                'Implementation-Version': version,
+                'Created-By': 'crazyStrome',
+                'Main-Class': 'MultiplyDowloader.Main',
+                'Class-Path': configurations.compile.collect {
+                    'lib' + it.getName().join(' ')
+                }
+        )
+    }
+    into('') {
+        from "$buildDir/classes/java/main/MultiplyDowloader"
+        include('sample')
+    }
+    into('') {
+        from "$projectDir/src/main/java/MultiplyDowloader"
     }
 }
-task copyJar(type:Copy) {
-    from configuration.runtime
-    into ('build/libs/lib')
-}
-task release(type:Copy,dependsOn:[build,copyJar]) {
-    from 'conf'
-    into ('build/libs/eachend/conf')
-}
-
 
